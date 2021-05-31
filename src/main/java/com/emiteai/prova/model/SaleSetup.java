@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,4 +13,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class SaleSetup {
     private List<Map<String, Integer>> productsAmount = new ArrayList<>();
+
+    private TransportOrder transportOrder;
+
 }

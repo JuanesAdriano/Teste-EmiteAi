@@ -1,15 +1,12 @@
 package com.emiteai.prova.service;
 
-import com.emiteai.prova.model.Product;
-import com.emiteai.prova.model.Sale;
-import com.emiteai.prova.model.SaleProduct;
-import com.emiteai.prova.model.SaleSetup;
+import com.emiteai.prova.model.*;
 import com.emiteai.prova.repository.ProductRepository;
 import com.emiteai.prova.repository.SaleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -18,7 +15,6 @@ import java.util.Objects;
 public class SaleService {
 
     private SaleRepository saleRepository;
-
 
     private ProductRepository productRepository;
 
@@ -31,7 +27,8 @@ public class SaleService {
     public Sale getSaleById(Integer id) {
         Objects.requireNonNull(id);
 
-        Sale sale = saleRepository.findById(id).orElse(null);
+        Sale sale = saleRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(id.toString()));
         return sale;
     }
 
@@ -45,9 +42,18 @@ public class SaleService {
         Objects.requireNonNull(saleSetup);
 
           Sale newSale = mountSaleFromSetup(saleSetup);
+          if (saleSetup.getTransportOrder() != null) {
+              mountNewTransportOrder(saleSetup.getTransportOrder(), newSale);
+          }
           Sale savedSale = saleRepository.save(newSale);
 
           return savedSale;
+    }
+
+    private void mountNewTransportOrder(TransportOrder transportOrder, Sale sale) {
+        if (transportOrder.getInfos() == null) return;
+        transportOrder.setSale(sale);
+        sale.setTransportOrder(transportOrder);
     }
 
     private Sale mountSaleFromSetup(SaleSetup saleSetup) throws Exception {

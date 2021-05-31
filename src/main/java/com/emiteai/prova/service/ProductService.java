@@ -1,12 +1,9 @@
 package com.emiteai.prova.service;
 
-import antlr.StringUtils;
 import com.emiteai.prova.model.Product;
 import com.emiteai.prova.repository.ProductRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -27,7 +24,7 @@ public class ProductService {
         Objects.requireNonNull(productId);
 
         Product product = productRepository.findById(productId)
-                .orElse(null);
+                .orElseThrow(() -> new EntityNotFoundException(productId.toString()));
 
         return product;
     }

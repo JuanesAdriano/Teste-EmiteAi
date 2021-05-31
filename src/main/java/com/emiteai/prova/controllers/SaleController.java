@@ -6,8 +6,11 @@ import com.emiteai.prova.repository.ProductRepository;
 import com.emiteai.prova.repository.SaleRepository;
 import com.emiteai.prova.service.SaleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 @RestController
@@ -22,10 +25,16 @@ public class SaleController {
 
     @GetMapping(value = "/{id}")
     public Sale getSaleById(@PathVariable("id") int id ) {
-        if (id == 0) return null;
+        try {
 
-        SaleService saleService = new SaleService(saleRepository, productRepository);
-        return saleService.getSaleById(id);
+
+            if (id == 0) return null;
+
+            SaleService saleService = new SaleService(saleRepository, productRepository);
+            return saleService.getSaleById(id);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Erro ao pesquisar Pedido por ID", e);
+        }
     }
 
     @GetMapping
@@ -36,8 +45,8 @@ public class SaleController {
             return saleService.getSales(limit);
 
         } catch (Exception e) {
-
-            return null;
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Erro ao pesquisar pedidos", e);
         }
     }
 
@@ -49,7 +58,7 @@ public class SaleController {
             SaleService saleService = new SaleService(saleRepository, productRepository);
             return saleService.createSale(saleSetup);
         } catch (Exception e) {
-            return null;
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
 

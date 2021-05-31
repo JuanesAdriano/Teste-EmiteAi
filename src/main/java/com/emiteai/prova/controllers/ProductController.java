@@ -4,8 +4,9 @@ import com.emiteai.prova.model.Product;
 import com.emiteai.prova.repository.ProductRepository;
 import com.emiteai.prova.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
@@ -23,9 +24,10 @@ public class ProductController {
             ProductService service = new ProductService(productRepository);
             return service.getProductById(id);
         } catch (EntityNotFoundException e) {
-            return null;
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado por ID", e);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao consultar Produto por ID", e);
         }
-
     }
 
     @GetMapping
@@ -35,7 +37,7 @@ public class ProductController {
             ProductService service = new ProductService(productRepository);
             return service.getProducts(name);
         } catch (Exception e) {
-            return null;
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro ao consultar Produtos", e);
         }
     }
 
