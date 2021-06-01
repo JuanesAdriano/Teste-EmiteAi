@@ -51,4 +51,12 @@ public class Sale extends GenericEntity {
         products.add(saleProduct);
     }
 
+    public String getClientName() {
+        if (transportOrder == null ||
+                transportOrder.getInfos() == null ||
+                transportOrder.getInfos().getClientName() == null)
+            return "N/I";
+        return transportOrder.getInfos().getClientName();
+    }
+
 }
