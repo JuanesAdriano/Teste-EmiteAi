@@ -1,5 +1,6 @@
 package com.emiteai.prova.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
@@ -25,12 +26,10 @@ public class Sale extends GenericEntity {
 
     private Long saleValue;
 
-//    @Column(name = "code", columnDefinition = "serial")
-//    private Long code;
     @OneToOne(cascade = CascadeType.ALL)
     private SaleCodeSequenceNumber code;
 
-    @JsonManagedReference
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "transport_order_id", referencedColumnName = "id")
     private TransportOrder transportOrder;

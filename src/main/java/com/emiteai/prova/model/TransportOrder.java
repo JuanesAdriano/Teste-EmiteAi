@@ -17,7 +17,6 @@ import javax.persistence.*;
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer", "handler"})
 public class TransportOrder extends GenericEntity{
 
-    @JsonBackReference
     @OneToOne(fetch = FetchType.LAZY)
     private Sale sale;
 
