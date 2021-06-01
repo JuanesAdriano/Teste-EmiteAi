@@ -3,9 +3,11 @@ package com.emiteai.prova.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -23,13 +25,19 @@ public class Sale extends GenericEntity {
 
     private Long saleValue;
 
-    @Column(name = "code", columnDefinition = "serial")
-    private Long code;
+//    @Column(name = "code", columnDefinition = "serial")
+//    private Long code;
+    @OneToOne(cascade = CascadeType.ALL)
+    private SaleCodeSequenceNumber code;
 
     @JsonManagedReference
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "transport_order_id", referencedColumnName = "id")
     private TransportOrder transportOrder;
+
+    @CreatedDate
+    @Column(name = "created_at")
+    private Date createdAt;
 
     public Integer getProductTotalAmount() {
         Integer amount = 0;

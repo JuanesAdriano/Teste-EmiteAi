@@ -12,7 +12,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Map;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/sale")
 public class SaleController {
@@ -59,6 +61,17 @@ public class SaleController {
             return saleService.createSale(saleSetup);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+    }
+
+    @GetMapping
+    @RequestMapping("/getReportSales")
+    public List<Map<String, String>> getSalesReport() {
+        try {
+            SaleService saleService = new SaleService(saleRepository, productRepository);
+            return saleService.getSalesReportData();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
     }
 

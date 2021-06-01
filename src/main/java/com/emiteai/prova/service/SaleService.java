@@ -7,9 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class SaleService {
@@ -90,6 +88,7 @@ public class SaleService {
         if (productsAmount < 1 || productsAmount > 3) {
             throw new Exception("Pedido deve conter entre 1 e 3 produtos!");
         }
+        if (sale.getCode() == null) sale.setCode(new SaleCodeSequenceNumber());
     }
 
     private void calculateSaleTotalValue(Sale sale) {
@@ -99,5 +98,34 @@ public class SaleService {
         }
 
         sale.setSaleValue(totalValue);
+    }
+
+    public List<Map<String,String>> getSalesReportData() throws Exception {
+       Long saleValue = 50000L;
+
+        List<Sale> sales = saleRepository.findAllBySaleValueGreaterThanEqual(saleValue);
+        if (sales == null || sales.isEmpty()) {
+           return new ArrayList<>();
+        }
+
+        List<Map<String, String>> result = new ArrayList<>();
+
+        for (Sale sale : sales) {
+            Map<String, String> line = new HashMap<>();
+            line.put("code", sale.getCode().getCode().toString());
+            line.put("saleValue", formatLongToCurrency(sale.getSaleValue()));
+            result.add(line);
+        }
+
+        return result;
+    }
+
+    private String formatLongToCurrency(Long value) {
+        if(value == null || value < 1) return "R$00,00";
+        String str = String.valueOf(value);
+        String fulls = str.substring(0, str.length() - 2);
+        String decimals = str.substring(str.length() - 2);
+
+        return "R$" + fulls + "," + decimals;
     }
 }
